@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Благодарности от любимых клиентов</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #d0eaff, #a0d8ff);
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      margin-bottom: 30px;
+      color: #0a3d62;
+    }
+    .track {
+      background: white;
+      margin: 15px auto;
+      padding: 20px;
+      width: 320px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 8px;
+      background: #3498db;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #217dbb;
+    }
+    .progress {
+      width: 100%;
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 5px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #3498db;
+    }
+    input[type="file"] {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>💙 Благодарности от любимых клиентов</h1>
+
+  <div id="tracks"></div>
+
+  <input type="file" id="fileInput" accept="audio/*" multiple>
+
+  <script>
+    const tracksContainer = document.getElementById('tracks');
+    let currentAudio = null;
+
+    function createTrack(name, src) {
+      const div = document.createElement('div');
+      div.className = 'track';
+
+      const title = document.createElement('p');
+      title.textContent = name;
+
+      const audio = document.createElement('audio');
+      audio.src = src;
+
+      const button = document.createElement('button');
+      button.textContent = '▶️ Воспроизвести';
+
+      const progress = document.createElement('div');
+      progress.className = 'progress';
+
+      const bar = document.createElement('div');
+      bar.className = 'progress-bar';
+      progress.appendChild(bar);
+
+      button.onclick = () => {
+        if (currentAudio && currentAudio !== audio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+        }
+
+        audio.play();
+        currentAudio = audio;
+      };
+
+      audio.ontimeupdate = () => {
+        const percent = (audio.currentTime / audio.duration) * 100;
+        bar.style.width = percent + '%';
+      };
+
+      div.appendChild(title);
+      div.appendChild(button);
+      div.appendChild(progress);
+      div.appendChild(audio);
+
+      tracksContainer.appendChild(div);
+    }
+
+    // стандартные звуки
+    createTrack('Звук 1', 'sounds/sound1.mp3');
+    createTrack('Звук 2', 'sounds/sound2.mp3');
+    createTrack('Звук 3', 'sounds/sound3.mp3');
+
+    // загрузка своих файлов
+    document.getElementById('fileInput').addEventListener('change', function(event) {
+      const files = event.target.files;
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const url = URL.createObjectURL(file);
+        createTrack(file.name, url);
+      }
+    });
+  </script>
+
+</body>
+</html>
